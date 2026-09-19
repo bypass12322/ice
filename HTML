@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>I'm Cooking RN</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&display=swap');
+    :root { color-scheme: dark; }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; }
+    body {
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      color: #fff;
+      background: radial-gradient(ellipse at 50% 45%, #191919 0%, #0b0b0b 30%, #030303 66%, #000 100%);
+      font-family: 'Barlow Condensed', 'Arial Narrow', Impact, sans-serif;
+    }
+    body::before {
+      position: fixed;
+      top: -35vh;
+      left: 50%;
+      width: 1px;
+      height: 150vh;
+      background: linear-gradient(180deg, transparent, rgba(255, 255, 255, .16), transparent);
+      box-shadow: 0 0 120px 70px rgba(255, 255, 255, .035);
+      content: "";
+      transform: translateX(-50%) rotate(18deg);
+      animation: light-drift 11s ease-in-out infinite alternate;
+      pointer-events: none;
+    }
+    body::after {
+      position: fixed;
+      inset: 0;
+      border: 1px solid rgba(255, 255, 255, .07);
+      background: repeating-linear-gradient(0deg, transparent 0, transparent 3px, rgba(255, 255, 255, .012) 4px);
+      content: "";
+      pointer-events: none;
+    }
+    .screen { position: relative; z-index: 1; display: grid; justify-items: center; gap: 34px; width: min(100% - 34px, 1100px); padding: 40px 20px; text-align: center; }
+    .screen::before { position: absolute; z-index: -1; width: min(75vw, 760px); height: min(75vw, 760px); border-radius: 50%; background: radial-gradient(circle, rgba(255, 255, 255, .045), transparent 66%); content: ""; animation: halo-breathe 6s ease-in-out infinite; }
+    .stars { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+    .star { position: absolute; top: -20px; left: var(--left); width: var(--size); height: var(--size); border-radius: 50%; background: #fff; box-shadow: 0 0 8px 2px rgba(255, 255, 255, .75); opacity: 0; animation: fall var(--speed) linear var(--delay) infinite; }
+    .star:nth-child(1) { --left: 8%; --size: 2px; --speed: 7s; --delay: -2s; } .star:nth-child(2) { --left: 18%; --size: 1px; --speed: 10s; --delay: -8s; } .star:nth-child(3) { --left: 31%; --size: 2px; --speed: 8s; --delay: -5s; } .star:nth-child(4) { --left: 46%; --size: 1px; --speed: 12s; --delay: -10s; } .star:nth-child(5) { --left: 61%; --size: 2px; --speed: 9s; --delay: -4s; } .star:nth-child(6) { --left: 76%; --size: 1px; --speed: 11s; --delay: -7s; } .star:nth-child(7) { --left: 91%; --size: 2px; --speed: 8s; --delay: -1s; }
+    .discord-orbit { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+    .discord-bubble { position: absolute; top: 17%; left: 8%; display: grid; place-items: center; width: 64px; height: 64px; border: 1px solid rgba(255, 255, 255, .4); border-radius: 50%; background: rgba(88, 101, 242, .18); box-shadow: inset 0 0 18px rgba(255, 255, 255, .1), 0 0 22px rgba(88, 101, 242, .5); cursor: crosshair; pointer-events: auto; animation: none; transition: width .25s ease, height .25s ease, background .25s ease; }
+    .discord-bubble:nth-child(2) { top: 35%; left: 78%; animation-delay: -2s; }
+    .discord-bubble:nth-child(3) { top: 72%; left: 20%; animation-delay: -4s; }
+    .discord-bubble img { width: 32px; height: 32px; opacity: .9; filter: drop-shadow(0 0 7px rgba(255, 255, 255, .8)); }
+    .discord-bubble span { display: none; color: rgba(255, 255, 255, .92); font: 700 9px Arial, sans-serif; letter-spacing: .1em; text-shadow: 0 0 6px #fff; }
+    .discord-bubble.open { z-index: 2; width: 142px; height: 82px; background: rgba(88, 101, 242, .42); }
+    .discord-bubble.open span { display: block; }
+    .spotify-orbit { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+    .spotify-bubble { position: absolute; top: 68%; left: 82%; display: grid; place-items: center; width: 64px; height: 64px; border: 1px solid rgba(255, 255, 255, .4); border-radius: 50%; background: rgba(30, 215, 96, .15); box-shadow: inset 0 0 18px rgba(255, 255, 255, .1), 0 0 22px rgba(30, 215, 96, .45); cursor: crosshair; pointer-events: auto; animation: none; transition: width .25s ease, height .25s ease, background .25s ease; }
+    .spotify-bubble:nth-child(2) { top: 12%; left: 68%; animation-delay: -3s; }
+    .spotify-bubble img { width: 32px; height: 32px; opacity: .92; filter: drop-shadow(0 0 7px rgba(255, 255, 255, .8)); }
+    .spotify-bubble span { display: none; color: rgba(255, 255, 255, .92); font: 700 9px Arial, sans-serif; letter-spacing: .1em; text-shadow: 0 0 6px #fff; }
+    .spotify-bubble.open { z-index: 2; width: 142px; height: 82px; background: rgba(30, 215, 96, .35); }
+    .spotify-bubble.open span { display: block; }
+    .stream-orbit { position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+    .stream-bubble { position: absolute; top: 18%; left: 42%; display: grid; place-items: center; width: 64px; height: 64px; border: 1px solid rgba(255, 255, 255, .4); border-radius: 50%; cursor: crosshair; pointer-events: auto; animation: none; transition: width .25s ease, height .25s ease, background .25s ease; }
+    .stream-bubble:nth-child(1) { background: rgba(145, 70, 255, .18); box-shadow: inset 0 0 18px rgba(255, 255, 255, .1), 0 0 22px rgba(145, 70, 255, .5); }
+    .stream-bubble:nth-child(2) { top: 78%; left: 70%; background: rgba(83, 252, 24, .14); box-shadow: inset 0 0 18px rgba(255, 255, 255, .1), 0 0 22px rgba(83, 252, 24, .4); }
+    .stream-bubble:nth-child(3) { top: 48%; left: 12%; background: rgba(145, 70, 255, .18); box-shadow: inset 0 0 18px rgba(255, 255, 255, .1), 0 0 22px rgba(145, 70, 255, .5); }
+    .stream-bubble:nth-child(4) { top: 58%; left: 88%; background: rgba(83, 252, 24, .14); box-shadow: inset 0 0 18px rgba(255, 255, 255, .1), 0 0 22px rgba(83, 252, 24, .4); }
+    .stream-bubble img { width: 32px; height: 32px; opacity: .92; filter: drop-shadow(0 0 7px rgba(255, 255, 255, .8)); }
+    .stream-bubble span { display: none; color: rgba(255, 255, 255, .92); font: 700 9px Arial, sans-serif; letter-spacing: .1em; text-shadow: 0 0 6px #fff; }
+    .stream-bubble.open { z-index: 2; width: 142px; height: 82px; }
+    .stream-bubble.open span { display: block; }
+    .road-ground { position: fixed; right: 0; bottom: 0; left: 0; z-index: 0; height: 23vh; overflow: hidden; background: linear-gradient(176deg, transparent 0 11%, #101010 12%, #070707 100%); pointer-events: none; }
+    .road-ground::before { position: absolute; top: 30%; right: 0; left: 0; height: 4px; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, .12) 18%, rgba(255, 255, 255, .12) 82%, transparent); box-shadow: 0 18px 0 rgba(255, 255, 255, .025); content: ""; }
+    .road-ground::after { position: absolute; top: 55%; left: 50%; width: 9px; height: 150%; background: repeating-linear-gradient(180deg, rgba(255, 255, 255, .24) 0 34px, transparent 34px 72px); content: ""; transform: translateX(-50%) perspective(80px) rotateX(28deg); }
+    .road-label { position: absolute; right: 18%; bottom: 12%; color: rgba(255, 255, 255, .58); font: 700 12px Arial, sans-serif; letter-spacing: .45em; text-shadow: 0 0 9px rgba(255, 255, 255, .95); }
+    .discord-bubble, .spotify-bubble, .stream-bubble { animation: rgb-shift 9s linear infinite; }
+    .discord-bubble:nth-child(1) { animation-delay: 0s; }
+    .discord-bubble:nth-child(2) { animation-delay: -1s; }
+    .spotify-bubble:nth-child(1) { animation-delay: -2s; }
+    .spotify-bubble:nth-child(2) { animation-delay: -3s; }
+    .stream-bubble:nth-child(1) { animation-delay: -4s; }
+    .stream-bubble:nth-child(2) { animation-delay: -5s; }
+    .stream-bubble:nth-child(3) { animation-delay: -6s; }
+    .stream-bubble:nth-child(4) { animation-delay: -7s; }
+    h1 {
+      position: relative;
+      margin: 0;
+      color: #fff;
+      font-size: clamp(1.45rem, 8vw, 7rem);
+      font-weight: 800;
+      letter-spacing: .06em;
+      line-height: .95;
+      white-space: nowrap;
+      text-transform: uppercase;
+      text-rendering: geometricPrecision;
+      text-shadow: 0 0 3px #fff, 0 0 14px rgba(255, 255, 255, .9), 0 0 52px rgba(255, 255, 255, .38);
+      animation: smooth-blink 3.8s ease-in-out infinite, title-bounce 2.6s ease-in-out infinite;
+    }
+    h1::after { display: block; width: 42%; height: 1px; margin: 22px auto 0; background: linear-gradient(90deg, transparent, #fff, transparent); box-shadow: 0 0 16px 2px rgba(255, 255, 255, .7); content: ""; opacity: .75; }
+    .timer {
+      color: rgba(255, 255, 255, .72);
+      font: 300 clamp(1rem, 2.4vw, 1.7rem)/1 Arial, sans-serif;
+      letter-spacing: .28em;
+      text-shadow: 0 0 14px rgba(255, 255, 255, .3);
+    }
+    @keyframes smooth-blink {
+      0%, 100% { opacity: 1; filter: brightness(1); }
+      45% { opacity: .78; filter: brightness(.82); }
+      52% { opacity: .48; filter: brightness(.62); }
+      60% { opacity: .9; filter: brightness(1.22); }
+    }
+    @keyframes light-drift { from { margin-left: -7vw; opacity: .45; } to { margin-left: 7vw; opacity: .9; } }
+    @keyframes halo-breathe { 0%, 100% { transform: scale(.92); opacity: .55; } 50% { transform: scale(1.08); opacity: 1; } }
+    @keyframes title-bounce { 0%, 100% { transform: translateY(0) scale(1); } 45% { transform: translateY(-5px) scale(1.012); } 65% { transform: translateY(1px) scale(.998); } }
+    @keyframes fall { 0% { transform: translate3d(0, -30px, 0); opacity: 0; } 12% { opacity: .8; } 88% { opacity: .35; } 100% { transform: translate3d(-70px, 110vh, 0); opacity: 0; } }
+    @keyframes discord-float { 0% { transform: translate3d(0, 0, 0) rotate(-12deg); opacity: 0; } 12% { opacity: .8; } 50% { transform: translate3d(52vw, 24vh, 0) rotate(14deg); } 88% { opacity: .55; } 100% { transform: translate3d(calc(100vw + 180px), 8vh, 0) rotate(-10deg); opacity: 0; } }
+    @keyframes discord-bob { 0%, 100% { transform: translate3d(0, 0, 0) rotate(-5deg); } 50% { transform: translate3d(12px, -16px, 0) rotate(5deg); } }
+    @keyframes spotify-bob { 0%, 100% { transform: translate3d(0, 0, 0) rotate(5deg); } 50% { transform: translate3d(-14px, 13px, 0) rotate(-5deg); } }
+    @keyframes rgb-shift { 0%, 100% { background: rgba(255, 30, 90, .2); box-shadow: inset 0 0 18px rgba(255, 255, 255, .1), 0 0 24px rgba(255, 30, 90, .55); } 33% { background: rgba(30, 210, 255, .2); box-shadow: inset 0 0 18px rgba(255, 255, 255, .1), 0 0 24px rgba(30, 210, 255, .55); } 66% { background: rgba(160, 60, 255, .2); box-shadow: inset 0 0 18px rgba(255, 255, 255, .1), 0 0 24px rgba(160, 60, 255, .55); } }
+    @media (prefers-reduced-motion: reduce) { h1, body::before, .screen::before, .star, .discord-bubble, .spotify-bubble, .stream-bubble { animation: none; } }
+  </style>
+</head>
+<body>
+  <div class="stars" aria-hidden="true"><span class="star"></span><span class="star"></span><span class="star"></span><span class="star"></span><span class="star"></span><span class="star"></span><span class="star"></span></div>
+  <div class="road-ground" aria-hidden="true"><span class="road-label">eyepng</span></div>
+  <div class="discord-orbit" aria-hidden="true"><div class="discord-bubble"><img src="https://cdn.simpleicons.org/discord/ffffff" alt=""><span>COMING SOON</span></div><div class="discord-bubble"><img src="https://cdn.simpleicons.org/discord/ffffff" alt=""><span>COMING SOON</span></div></div>
+  <div class="spotify-orbit" aria-hidden="true"><div class="spotify-bubble"><img src="https://cdn.simpleicons.org/spotify/ffffff" alt=""><span>COMING SOON</span></div><div class="spotify-bubble"><img src="https://cdn.simpleicons.org/spotify/ffffff" alt=""><span>COMING SOON</span></div></div>
+  <div class="stream-orbit" aria-hidden="true"><div class="stream-bubble"><img src="https://cdn.simpleicons.org/twitch/ffffff" alt=""><span>COMING SOON</span></div><div class="stream-bubble"><img src="https://cdn.simpleicons.org/kick/ffffff" alt=""><span>COMING SOON</span></div><div class="stream-bubble"><img src="https://cdn.simpleicons.org/twitch/ffffff" alt=""><span>COMING SOON</span></div><div class="stream-bubble"><img src="https://cdn.simpleicons.org/kick/ffffff" alt=""><span>COMING SOON</span></div></div>
+  <main class="screen">
+    <h1>I'M COOKING RN</h1>
+    <div class="timer" id="timer">100:00:00:00</div>
+  </main>
+  <script>
+    const timerKey = "cooking-countdown-end";
+    let end = Number(localStorage.getItem(timerKey));
+    if (!end || end <= Date.now()) {
+      end = Date.now() + 100 * 60 * 60 * 1000;
+      localStorage.setItem(timerKey, String(end));
+    }
+    function updateTimer() {
+      const seconds = Math.max(0, Math.floor((end - Date.now()) / 1000));
+      const days = Math.floor(seconds / 86400);
+      const hours = Math.floor((seconds % 86400) / 3600);
+      const minutes = Math.floor((seconds % 3600) / 60);
+      const remaining = seconds % 60;
+      document.getElementById("timer").textContent = `${String(days).padStart(2, "0")}:${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(remaining).padStart(2, "0")}`;
+    }
+    updateTimer();
+    setInterval(updateTimer, 1000);
+    document.querySelectorAll(".discord-bubble, .spotify-bubble, .stream-bubble").forEach(bubble => {
+      bubble.addEventListener("click", event => {
+        event.stopPropagation();
+        bubble.classList.toggle("open");
+      });
+    });
+    const physicsBubbles = [...document.querySelectorAll(".discord-bubble, .spotify-bubble, .stream-bubble")].map((element, index) => {
+      const bounds = element.getBoundingClientRect();
+      return { element, x: bounds.left, y: bounds.top, vx: (index % 2 ? -1 : 1) * (0.35 + index * .08), vy: (index % 2 ? 0.3 : -0.25) };
+    });
+    let lastFrame = performance.now();
+    function animateBubbles(now) {
+      const elapsed = Math.min(32, now - lastFrame) / 16.67;
+      lastFrame = now;
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      physicsBubbles.forEach(bubble => {
+        const size = bubble.element.getBoundingClientRect();
+        bubble.x += bubble.vx * elapsed;
+        bubble.y += bubble.vy * elapsed;
+        bubble.vy += 0.006 * elapsed;
+        if (bubble.x <= 4 || bubble.x + size.width >= width - 4) { bubble.vx *= -1; bubble.x = Math.max(4, Math.min(width - size.width - 4, bubble.x)); }
+        if (bubble.y <= 4 || bubble.y + size.height >= height - 4) { bubble.vy *= -0.98; bubble.y = Math.max(4, Math.min(height - size.height - 4, bubble.y)); }
+        bubble.element.style.left = `${bubble.x}px`;
+        bubble.element.style.top = `${bubble.y}px`;
+      });
+      requestAnimationFrame(animateBubbles);
+    }
+    requestAnimationFrame(animateBubbles);
+  </script>
+</body>
+</html>
